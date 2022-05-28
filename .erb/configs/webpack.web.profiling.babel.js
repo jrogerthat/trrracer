@@ -110,7 +110,7 @@
      ],
    },
    optimization: {
-     minimize: true,
+     minimize: false,
      minimizer:
        [
          new TerserPlugin({
@@ -141,5 +141,12 @@
          process.env.OPEN_ANALYZER === 'true' ? 'server' : 'disabled',
        openAnalyzer: process.env.OPEN_ANALYZER === 'true',
      }),
-   ]
+   ],
+      resolve: {
+         alias: {
+           'react-dom': 'react-dom/profiling',
+           'scheduler/tracing': 'scheduler/tracing-profiling',
+ //          'schedule/tracking': 'schedule/cjs/schedule-tracking.profiling.min'
+         }
+       }
  });
