@@ -13,6 +13,7 @@ import './App.global.css';
 import { useProjectState } from './components/ProjectContext';
 
 import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
+import { testGoogle } from './AuthenticateGoogleWeb';
 
 const migrateTrrraceFormat = (projectData: any) => {
   // - add url array if not already present
@@ -57,6 +58,8 @@ export default function App() {
         })
       );
   }
+
+  testGoogle();
 
   if (!projectData) {
     return (

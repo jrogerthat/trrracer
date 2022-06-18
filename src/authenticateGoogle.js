@@ -1,3 +1,3 @@
 import { authenticate } from "./authenticateGoogleElectron";
 
-export authenticate;
+export {authenticate};

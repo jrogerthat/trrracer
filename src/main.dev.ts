@@ -19,6 +19,7 @@ import log from 'electron-log';
 import ProjectLoader from './ProjectLoader';
 import { authenticate } from './authenticateGoogle';
 import { useState } from 'react';
+import { testGoogle } from './AuthenticateGoogleWeb';
 
 export default class AppUpdater {
   constructor() {
@@ -108,7 +109,10 @@ const openProjectWindow = async (projectPath: string) => {
       mainWindow.focus();
       
       console.log('NEED TO ADD THIS BACK IN')
-      // authenticate();
+      if (process.env.NODE_ENV === 'development'){
+        authenticate()
+      }
+      
     }
 
     mainWindow.webContents.send('projectPath', projectPath);
