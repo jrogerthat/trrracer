@@ -11,7 +11,6 @@ import QueryView from './QueryView';
 import BubbleVis from './BubbleVis';
 import PaperView from './PaperView';
 import AddEntryForm from './AddEntryForm';
-import GoogleAuthWebComp from './GoogleAuthWeb';
 import { FaDatabase, FaLink, FaPaperclip, FaPaperPlane, FaPencilAlt } from 'react-icons/fa';
 import { MdComment, MdPresentToAll } from 'react-icons/md';
 import { GrNotes } from 'react-icons/gr';
@@ -209,7 +208,6 @@ const Project = (ProjectPropValues: ProjectProps) => {
       }else if(parsed.granularity === 'artifact'){
       //http://127.0.0.1:8080/?view=detail%20view&granularity=artifact&id=6361f1cc-a79e-4205-9513-12036c9417a6
         
-        
         let selected = projectData.entries.filter(en =>{
           let fileTest = en.files.filter(f => f.artifact_uid === parsed.id);
           return fileTest.length > 0
@@ -217,7 +215,6 @@ const Project = (ProjectPropValues: ProjectProps) => {
 
         let artifact = selected[0].files.map(m => m.artifact_uid).indexOf(parsed.id);
 
-     
         const newHop = [{
           activity: selected[0], 
           artifactUid: parsed.id,

@@ -14,8 +14,6 @@
   // constructor(file, destination) {
   //   const authOb = GoogleAuth.getInstance();
 
-  
-
   //   this.fileName = file.name;
   //   this.filePath = file.path;
   //   this.destination = destination;

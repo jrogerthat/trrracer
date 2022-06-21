@@ -16,7 +16,7 @@ import * as CREDENTIALS from '../assets/google_web_cred.json';
 
 import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
 
-import { MyDriveComponent } from './googleDriveWebReactGapi';
+// import { MyDriveComponent } from './googleDriveWebReactGapi';
 
 
 const migrateTrrraceFormat = (projectData: any) => {
