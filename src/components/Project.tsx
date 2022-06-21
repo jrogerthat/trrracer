@@ -11,11 +11,13 @@ import QueryView from './QueryView';
 import BubbleVis from './BubbleVis';
 import PaperView from './PaperView';
 import AddEntryForm from './AddEntryForm';
+import GoogleAuthWebComp from './GoogleAuthWeb';
 import { FaDatabase, FaLink, FaPaperclip, FaPaperPlane, FaPencilAlt } from 'react-icons/fa';
 import { MdComment, MdPresentToAll } from 'react-icons/md';
 import { GrNotes } from 'react-icons/gr';
 import { RiComputerLine, RiNewspaperLine } from 'react-icons/ri';
 import { BiQuestionMark } from 'react-icons/bi';
+
 const queryString = require('query-string');
 
 interface ProjectProps {
@@ -251,7 +253,7 @@ const Project = (ProjectPropValues: ProjectProps) => {
       projectData.entries.flatMap(f => f.files).length
   ]);
 
-  console.log('filter', filteredActivities);
+  
 
   if (viewType === 'query') {
     return (
@@ -313,9 +315,9 @@ const Project = (ProjectPropValues: ProjectProps) => {
           width: '100%',
         }}
       >
+        {/* <GoogleAuthWebComp /> */}
         <TopBar
            viewType={viewType}
-          //  filteredActivities={filteredActivities}
            setViewType={setViewType}
            newTitle={newTitle}
            setNewTitle={setNewTitle}

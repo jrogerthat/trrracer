@@ -35,6 +35,13 @@ export async function authenticate() {
     await writeFile(TOKEN_PATH, JSON.stringify(token));
 
     oAuth2Client.setCredentials(token);
+
+    console.log('oAuth2Client', oAuth2Client);
+
     return oAuth2Client;
   }
+}
+
+export function pullFileList(){
+
 }

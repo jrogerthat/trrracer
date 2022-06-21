@@ -3,17 +3,21 @@
 
 // This is the entrypoint for the React app displayed in the Web App. It *is not* able to use node and electron APIs.
 
-import React, { useState } from 'react';
+import React, { useEffect, useLayoutEffect, useState } from 'react';
 import { ChakraProvider } from '@chakra-ui/react';
 
 import Project from './components/Project';
+import { GoogleApiProvider } from 'react-gapi'
 
 import './App.global.css';
 
 import { useProjectState } from './components/ProjectContext';
+import * as CREDENTIALS from '../assets/google_web_cred.json';
 
 import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
-import { testGoogle } from './AuthenticateGoogleWeb';
+
+import { MyDriveComponent } from './googleDriveWebReactGapi';
+
 
 const migrateTrrraceFormat = (projectData: any) => {
   // - add url array if not already present
@@ -46,6 +50,8 @@ export default function App() {
     setPath('http://localhost:8081'); // TODO: make not a constant
   }
 
+  
+
   if (folderPath && !projectData) {
     fetch(`${folderPath}/trrrace.json`)
       .then((res) => res.json()) // ?
@@ -58,10 +64,11 @@ export default function App() {
         })
       );
   }
+  
 
-  testGoogle();
 
   if (!projectData) {
+
     return (
       <ChakraProvider>
         <p>Loading...</p>
@@ -70,8 +77,17 @@ export default function App() {
   }
 
   return (
+    // <ChakraProvider>
+    //   <GoogleApiProvider clientId={CREDENTIALS.web['client_id']}>
+    //   <MyDriveComponent />
+    //   </GoogleApiProvider>
+    //   <Project folderPath={folderPath} />
+    // </ChakraProvider> 
     <ChakraProvider>
-      <Project folderPath={folderPath} />
+    {/* <GoogleApiProvider clientId={CREDENTIALS.web['client_id']}>
+    <MyDriveComponent />
+    </GoogleApiProvider> */}
+    <Project folderPath={folderPath} />
     </ChakraProvider> 
   );
 }

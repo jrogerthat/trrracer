@@ -9,14 +9,36 @@
     <div id="root"></div>
     <!-- <script defer src='./indexWeb.prod.js'></script> -->
     <script>
-      const scripts = ['./indexWeb.prod.js',  'https://apis.google.com/js/api.js'];
+      const scripts = ['./indexWeb.prod.js'];
       if (scripts.length) {
         document.write(
           scripts
-            .map((script) => `<script defer src="${script}"><\/script>`)
+            .map((script) => {
+              if(script.includes('https')){
+                if (window.trustedTypes && trustedTypes.createPolicy) { // Feature testing
+                  const escapeHTMLPolicy = trustedTypes.createPolicy('myEscapePolicy', {
+                    createHTML: string => string.replace(/\</g, '&lt;')
+                  });
+                  console.log('this works', escapeHTMLPolicy.createHTML('<script defer src="${script}"><\/script>'))
+                  return escapeHTMLPolicy.createHTML(`<script defer src="${script}"><\/script>`);
+                }else{
+                  return error.log('could not load script');
+                }
+                
+              }else{
+                return `<script defer src="${script}"><\/script>`
+              }
+              
+              })
             .join('')
         );
       }
     </script>
+    <!-- <Script
+      src="https://accounts.google.com/gsi/client"
+      id="gsi-client"
+      async
+      defer
+    /> -->
   </body>
 </html>

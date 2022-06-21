@@ -91,7 +91,7 @@
 //       console.log('CONSOLE.LOG', code);
 //       rl.close();
 //       oAuth2Client.getToken(
-//         '4/1AX4XfWhgFPF3Tk_16ijRGqeMwbRoiJ7KecCGpmkORUCCgZeZJ1HstJG_th8',
+//         '',
 //         (err, token) => {
 //           if (err) return console.error('Error retrieving access token', err);
 //           oAuth2Client.setCredentials(token);
