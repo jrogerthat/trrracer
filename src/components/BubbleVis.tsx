@@ -1154,6 +1154,7 @@ const BubbleVis = (props: BubbleProps) => {
     defineEvent,
     viewParams,
     windowDimension,
+    filterRT
   ]);
 
   // useEffect(()=> {
