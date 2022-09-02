@@ -4,7 +4,7 @@
 // This is the entrypoint for the React app displayed in the Web App. It *is not* able to use node and electron APIs.
 
 import React, { useState } from 'react';
-import { ChakraProvider } from '@chakra-ui/react';
+import { Spinner, ChakraProvider } from '@chakra-ui/react';
 
 import Project from './components/Project';
 
@@ -37,7 +37,7 @@ const migrateTrrraceFormat = (projectData: any) => {
 
 export default function App() {
   const [folderPath, setPath] = useState<string>('');
-  const [{ projectData }, dispatch] = useProjectState();
+  const [{ loading, projectData}, dispatch] = useProjectState();
 
   if (!folderPath) {
     const isDev = process.env.NODE_ENV === 'development';
@@ -45,7 +45,7 @@ export default function App() {
     setPath(`${isDev ? 'http://localhost:9999' : '.'}/.netlify/functions/download-gdrive-file/?folderName=evobio&fileName=`); // TODO: make not a constant
   }
 
-  if (folderPath && !projectData) {
+  if (folderPath && !projectData && !loading) {
     fetch(`${folderPath}trrrace.json`)
       .then((res) => res.json()) // ?
       .then((data) =>
@@ -61,7 +61,7 @@ export default function App() {
   if (!projectData) {
     return (
       <ChakraProvider>
-        <p>Loading...</p>
+        <Spinner /> <p>Loading...</p>
       </ChakraProvider>
     );
   }
