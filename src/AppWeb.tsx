@@ -40,7 +40,11 @@ const migrateTrrraceFormat = (projectData: any) => {
 
 export default function App() {
   const [folderPath, setPath] = useState<string>('');
-  const [{ loading, projectData }, dispatch] = useProjectState();
+  const [loading, setLoading] = useState(false);
+
+  const [{ projectData }, dispatch] = useProjectState();
+
+
   const isDev = process.env.NODE_ENV === 'development';
   // const isDev = true;
  
@@ -81,6 +85,8 @@ export default function App() {
   }
 
   if (folderPath && !projectData && !loading) {
+    setLoading(true);
+
     fetch(`${folderPath}trrrace.json`)
       .then((res) => res.json()) // ?
       .then((data) =>
