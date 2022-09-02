@@ -80,7 +80,6 @@ export default function App() {
 
   }
 
-<<<<<< load-once
   if (folderPath && !projectData && !loading) {
     fetch(`${folderPath}trrrace.json`)
       .then((res) => res.json()) // ?
