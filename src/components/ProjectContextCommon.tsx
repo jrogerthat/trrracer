@@ -360,8 +360,7 @@ export const getAppStateReducer = (copyFiles: any, readProjectFile: any, saveJSO
         // the simplest way to handle this is to handle this in an async function,
         // and dispatch a new message to save the project data when it is ready
         getData(action, isReadOnly).then(data => action.dispatch({ type: 'SAVE_DATA', data }));
-
-        return state;
+        return { state, loading: true };
       }
       case 'SAVE_DATA': {
         console.log('data',action.data)
