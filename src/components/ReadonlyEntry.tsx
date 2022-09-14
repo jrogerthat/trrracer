@@ -69,20 +69,8 @@ const ReadonlyEntryFile = (props: ReadonlyEntryFilePropTypes) => {
                     `https://docs.google.com/document/d/${file.fileId}/edit?usp=sharing`,
                     '_blank'
                   );
-                } else if (file.fileType === 'pdf') {
-                  let perf = joinPath(folderPath, file.title);
-
-                  readFileSync(perf)
-                    .then((res) => res.text())
-                    .then((pap) => {
-                      console.log('PAP', pap);
-                      window.open(
-                        `data:application/pdf;base64,${pap}`,
-                        '_blank'
-                      );
-                    });
                 } else {
-                  window.open(`${folderPath}${file.title}`, '_blank');
+                  window.open(`${folderPath}${file.title}&raw=1`, '_blank');
                 }
               }
             }}
