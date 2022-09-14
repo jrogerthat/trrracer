@@ -110,8 +110,13 @@ exports.handler = async function (event) {
       }
     }
 
-    fileData = new Uint8Array(file.data);
-    fileData = Buffer.from(fileData).toString('base64');
+    if (queryStringParameters.raw){
+      fileData = JSON.stringify(file.data)
+    } else {
+      fileData = new Uint8Array(file.data);
+      fileData = Buffer.from(fileData).toString('base64');
+    }
+
   } else if (fileExtension === 'json') {
     file = await drive.files.get({
       alt: 'media',
