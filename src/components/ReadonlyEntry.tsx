@@ -288,12 +288,13 @@ const ReadonlyEntry = (props: EntryPropTypes) => {
           <UnorderedList>
             {urls.map((url, i) => (
               <ListItem key={`${url.url}-${i}`}>
-                <a href={url.url}>{url.title}</a>
-                <FaExternalLinkAlt
-                  title="Open URL in default web browser"
-                  size="12px"
-                  style={{ display: 'inline' }}
-                />
+                <a href={url.url}>{url.title}
+                  <FaExternalLinkAlt
+                    title="Open URL in default web browser"
+                    size="12px"
+                    style={{ display: 'inline' }}
+                  />
+                </a>
               </ListItem>
             ))}
           </UnorderedList>
