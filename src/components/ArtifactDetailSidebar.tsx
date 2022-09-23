@@ -4,6 +4,7 @@ import { WithContext as ReactTags } from 'react-tag-input';
 import { FaArrowLeft, FaArrowRight, FaEye, FaEyeSlash } from 'react-icons/fa';
 import { useProjectState } from './ProjectContext';
 import { CreateThreadComponent } from './ThreadNav';
+import { EntryTypeWithIndex, ResearchThread } from './types';
 
 const ArtifactDetailContext = (props: any) => {
   const { selectedArtifactTest } = props;
@@ -75,7 +76,13 @@ const ArtifactDetailContext = (props: any) => {
   );
 };
 
-const ArtifactToThread = (props: any) => {
+type ArtifactToThreadProps = {
+  thread: ResearchThread;
+  threadIndex: number;
+  activity: EntryTypeWithIndex;
+  artifactIndex: number;
+};
+const ArtifactToThread = (props: ArtifactToThreadProps) => {
   const [, dispatch] = useProjectState();
 
   const { thread, threadIndex, activity, artifactIndex } = props;
@@ -127,7 +134,15 @@ const ArtifactToThread = (props: any) => {
   );
 };
 
-const FragmentToThread = (props: any) => {
+type FragmentToThreadProps = {
+  thread: ResearchThread;
+  threadIndex: number;
+  activity: EntryTypeWithIndex;
+  artifactIndex: number;
+  fragSelected: boolean;
+  setFragSelected: React.Dispatch<React.SetStateAction<boolean>>;
+};
+const FragmentToThread = (props: FragmentToThreadProps) => {
   const [, dispatch] = useProjectState();
 
   const {
@@ -178,7 +193,7 @@ const FragmentToThread = (props: any) => {
                 fragment: fragSelected,
                 fragmentType: 'text',
               });
-              setFragSelected(null);
+              setFragSelected(false);
             }}
           >
             Add
@@ -188,7 +203,12 @@ const FragmentToThread = (props: any) => {
     </Box>
   );
 };
-const InteractiveActivityTag = (props: any) => {
+
+type InteractiveActivityTagProps = {
+  tag: string;
+  index: number;
+};
+const InteractiveActivityTag = (props: InteractiveActivityTagProps) => {
   const { index, tag } = props;
   const [{ projectData, hopArray, selectedArtifact }, dispatch] =
     useProjectState();
@@ -211,6 +231,8 @@ const InteractiveActivityTag = (props: any) => {
         boxShadow: '1px 1px 2px #A3AAAF',
       }}
     >
+      {
+        tagMatches.length > 1 ? 
       <Flex>
         <span
           style={{ cursor: 'pointer' }}
@@ -313,6 +335,14 @@ const InteractiveActivityTag = (props: any) => {
           <FaArrowRight />
         </span>
       </Flex>
+      : <Flex>
+        <Spacer />
+          <span
+          style={{ alignSelf: 'center' }}
+          >{tag}
+          </span>
+          <Spacer />
+        </Flex>}
       {expandedTag && (
         <div>
           {tagMatches.map((t, i) => (
@@ -367,7 +397,11 @@ const InteractiveActivityTag = (props: any) => {
   );
 };
 
-const ArtifactDetailSidebar = (props: any) => {
+type ArtifactDetailSidebarProps = {
+  fragSelected: boolean;
+  setFragSelected: React.Dispatch<React.SetStateAction<boolean>>;
+};
+const ArtifactDetailSidebar = (props: ArtifactDetailSidebarProps) => {
   const { fragSelected, setFragSelected } = props;
 
   const [
@@ -378,6 +412,7 @@ const ArtifactDetailSidebar = (props: any) => {
       selectedArtifact,
       isReadOnly,
       viewParams,
+      folderPath
     },
     dispatch,
   ] = useProjectState();
@@ -507,23 +542,41 @@ const ArtifactDetailSidebar = (props: any) => {
         <Box>
           <Button
             onClick={() => {
-              const indexTest = projectData.citations
-                .map((c) => c.id)
-                .indexOf(selectedArtifactTest.artifact_uid);
-              const index =
-                indexTest > -1
-                  ? indexTest + 1
-                  : projectData.citations.length + 1;
-              navigator.clipboard.writeText(
-                String.raw`\trrracer{detail view}{artifact}{${selectedArtifactTest.artifact_uid}}{${index}}`
-              );
-              if (indexTest === -1) {
-                const newCitations = [
-                  ...projectData.citations,
-                  { id: selectedArtifactTest.artifact_uid, cIndex: index },
-                ];
-                dispatch({ type: 'ADD_CITATION', citations: newCitations });
+
+              let what = folderPath?.split('/').at(-1);
+
+              let dataDict = {
+                'Jen' : 'jen',
+                'Evo Bio' : 'evobio',
+                'Ethics of Exit': 'ethics'
               }
+
+              if(!selectedArtifactTest.artifact_uid){
+                
+                if(selectedArtifactTest.goog_ids && selectedArtifactTest.goog_ids.googId){
+                  selectedArtifactTest.artifact_uid = selectedArtifactTest.goog_ids.googId;
+
+               
+
+                  dispatch({
+                    type: 'ADD_ARTIFACT_UID',
+                    activityID: selectedArtifact.activity.activity_uid,
+                    artifactIndex: selectedArtifact.artifactIndex,
+                    artifactUID: selectedArtifactTest.goog_ids.googId
+                    // activityID: selectedArtifact.activity.activity_uid,
+                  });
+
+                  // dispatch('ADD_ARTIFACT_UID', selectedArtifactTest)
+                }else{
+                  console.log('DOES NOT HAVE GOOGLE ID', selectedArtifactTest);
+                }
+                
+              }
+            
+              navigator.clipboard.writeText(
+                String.raw`\trrracer{${dataDict[what]}}{detail view}{artifact}{${selectedArtifactTest.artifact_uid}}`
+              );
+            
             }}
           >
             Copy this ref
@@ -616,7 +669,7 @@ const ArtifactDetailSidebar = (props: any) => {
           )}
           {showTagList && !showTagAdd && (
             <>
-              {selectedArtifact.activity.tags.map((t: any, i: number) => (
+              {selectedArtifact.activity.tags.map((t, i) => (
                 <React.Fragment key={`it-${i}`}>
                   <InteractiveActivityTag tag={t} index={i} />
                 </React.Fragment>
@@ -692,8 +745,7 @@ const ArtifactDetailSidebar = (props: any) => {
                   {researchThreads &&
                   researchThreads.research_threads.length > 0 ? (
                     <div>
-                      {researchThreads.research_threads.map(
-                        (thread: any, ti: number) => (
+                      {researchThreads.research_threads.map((thread, ti) => (
                           <React.Fragment key={`tr-${ti}`}>
                             {fragSelected ? (
                               <FragmentToThread

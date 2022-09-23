@@ -4,12 +4,9 @@
 // This is the entrypoint for the React app displayed in the Web App. It *is not* able to use node and electron APIs.
 
 import React, { useEffect, useState } from 'react';
-import { ChakraProvider } from '@chakra-ui/react';
-
+import { Spinner, ChakraProvider } from '@chakra-ui/react';
 import Project from './components/Project';
-
 import './App.global.css';
-
 import { useProjectState } from './components/ProjectContext';
 import SplashWeb from './components/SplashWeb';
 
@@ -40,7 +37,11 @@ const migrateTrrraceFormat = (projectData: any) => {
 
 export default function App() {
   const [folderPath, setPath] = useState<string>('');
+  const [loading, setLoading] = useState(false);
+
   const [{ projectData }, dispatch] = useProjectState();
+
+
   const isDev = process.env.NODE_ENV === 'development';
   // const isDev = true;
  
@@ -80,8 +81,9 @@ export default function App() {
 
   }
 
+  if (folderPath && !projectData && !loading) {
+    setLoading(true);
 
-  if (folderPath && !projectData) {
     fetch(`${folderPath}trrrace.json`)
       .then((res) => res.json()) // ?
       .then((data) =>
@@ -100,7 +102,7 @@ export default function App() {
   if (!projectData) {
     return (
       <ChakraProvider>
-        <p>Loading...</p>
+        <Spinner /> <p>Loading...</p>
       </ChakraProvider>
     );
   }

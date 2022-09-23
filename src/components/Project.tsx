@@ -211,7 +211,7 @@ const Project = (ProjectPropValues: ProjectProps) => {
   const [newTitle, setNewTitle] = useState<string>(
     projectData.title === 'Jen' ? 'tRRRacer Meta' : projectData.title
   );
-  const [groupBy, setGroupBy] = useState(null);
+ 
   const [defineEvent, setDefineEvent] = useState<boolean>(false);
   const [hideByDefault, setHideByDefault] = useState<boolean>(false);
   const [addEntrySplash, setAddEntrySplash] = useState<boolean>(false);
@@ -288,11 +288,10 @@ const Project = (ProjectPropValues: ProjectProps) => {
           hideByDefault={hideByDefault}
           setAddEntrySplash={setAddEntrySplash}
         />
-        <Flex position="relative" top={130}>
+        <Flex position="relative" top={`${fromTop}px`}>
           <LeftSidebar fromTop={fromTop} />
           <BubbleVis
-            groupBy={groupBy}
-            setGroupBy={setGroupBy}
+            flexAmount={null}
             defineEvent={defineEvent}
             setDefineEvent={setDefineEvent}
             bubbleDivWidth={bubbleDivWidth}
@@ -350,10 +349,8 @@ const Project = (ProjectPropValues: ProjectProps) => {
           setPath={setPath}
         />
         <Flex position="relative" top={`${fromTop}px`}>
-          {!groupBy && <LeftSidebar fromTop={fromTop} groupBy={groupBy} />}
+          <LeftSidebar fromTop={fromTop} />
           <BubbleVis
-            groupBy={groupBy}
-            setGroupBy={setGroupBy}
             defineEvent={defineEvent}
             setDefineEvent={setDefineEvent}
             windowDimension={windowDimension}
@@ -365,7 +362,7 @@ const Project = (ProjectPropValues: ProjectProps) => {
             <AddEntryForm setAddEntrySplash={setAddEntrySplash} />
           )}
 
-          {!groupBy && !hideByDefault && (
+          {!hideByDefault && (
             <div
             style={{
               width: barWidth,
@@ -411,7 +408,12 @@ const Project = (ProjectPropValues: ProjectProps) => {
           hideByDefault={hideByDefault}
           setAddEntrySplash={setAddEntrySplash}
         />
-        <PaperView folderPath={folderPath} windowDimension={windowDimension} setWindowDimension={setWindowDimension} />
+        <PaperView 
+        folderPath={folderPath} 
+        windowDimension={windowDimension} 
+        setWindowDimension={setWindowDimension} 
+        setViewType={setViewType}
+        />
       </div>
     );
   }

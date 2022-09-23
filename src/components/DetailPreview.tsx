@@ -42,7 +42,7 @@ interface DetailPreviewPropsType {
 const TextRender = (textProps: { textArray: TextArray }) => {
   const { textArray } = textProps;
   if (textArray.length > 1) {
-    return textArray.map((ta: any, i: number) => (
+    return textArray.map((ta, i) => (
       <span
         key={`book-span-${i}`}
         style={{
@@ -135,9 +135,6 @@ const DetailPreview = (props: DetailPreviewPropsType) => {
     const [chosenGoogData, setchosenGoogData] = useState<null|any>(null);
     const [chosenComments, setChosenComments] = useState<null|any>(null);
 
-    // console.log('is it here outside of useEffect', Object.keys(googleData).indexOf(artifact.fileId) > -1)
-    // console.log('artifact id, outside of use effect', artifact.fileId);
-
     useEffect(()=> {
 
       if(isReadOnly){
@@ -217,6 +214,7 @@ const DetailPreview = (props: DetailPreviewPropsType) => {
                   comments={chosenComments}
                   setFragSelected={setFragSelected}
                   artifactBookmarks={artifact.bookmarks}
+                  searchTermArtifact={searchTermArtifact}
                 />
               ))}
             </div>
@@ -307,7 +305,7 @@ const DetailPreview = (props: DetailPreviewPropsType) => {
     let path = isReadOnly ? `${folderPath}${title}` : `${folderPath}/${title}`;
 
     useEffect(() => {
-
+     
       if (isReadOnly) {
         readFileSync(path)
           .then((res) => res.text())
@@ -364,10 +362,7 @@ const DetailPreview = (props: DetailPreviewPropsType) => {
   if (title.endsWith('.eml')) {
     return (
       <EmailRender
-        setFragSelected={setFragSelected}
         title={title}
-        artifactData={artifact}
-        activityData={activity}
       />
     );
   }

@@ -69,20 +69,8 @@ const ReadonlyEntryFile = (props: ReadonlyEntryFilePropTypes) => {
                     `https://docs.google.com/document/d/${file.fileId}/edit?usp=sharing`,
                     '_blank'
                   );
-                } else if (file.fileType === 'pdf') {
-                  let perf = joinPath(folderPath, file.title);
-
-                  readFileSync(perf)
-                    .then((res) => res.text())
-                    .then((pap) => {
-                      console.log('PAP', pap);
-                      window.open(
-                        `data:application/pdf;base64,${pap}`,
-                        '_blank'
-                      );
-                    });
                 } else {
-                  window.open(`${folderPath}${file.title}`, '_blank');
+                  window.open(`${folderPath}${file.title}&raw=1`, '_blank');
                 }
               }
             }}
@@ -113,40 +101,26 @@ const ReadonlyEntryFile = (props: ReadonlyEntryFilePropTypes) => {
                   ],
                 });
               } else {
-                d3.select('#popover-det').remove();
-
-                const pop = d3
-                  .select('body')
-                  .append('div')
-                  .attr('id', 'popover-det');
-                pop
-                  .style('position', 'absolute')
-                  .style('left', '370px')
-                  .style('top', '100px')
-                  .style('width', '700px')
-                  .style('padding', '10px')
-                  .style('background-color', '#fff')
-                  .style('border', '2px solid gray')
-                  .style('border-radius', '10px')
-                  .style('z-index', '6000');
-
-                const cancel = pop
-                  .append('div')
-                  .style('background-color', '#d3d3d3')
-                  .style('border-radius', '6px');
-                cancel.append('text').text('x').style('font-weight', '900');
-                cancel.style('float', 'right');
-                cancel.style('cursor', 'pointer');
-                cancel.on('click', () => pop.remove());
-
-                const textDiv = pop.append('div');
-                textDiv.html(
-                  '<div>THIS IS WHERE THE DETAIL FOR THE ARTIFACT GOES.</div>'
-                );
-
-                pop.style('height', '800px');
-              }
+                setViewType('detail view');
+                dispatch({
+                  type: 'SELECTED_ARTIFACT',
+                  activity: thisEntry,
+                  artifactIndex: i,
+                  hopArray: [
+                    {
+                      activity: thisEntry,
+                      artifactUid: thisEntry.files[i].artifact_uid,
+                      hopReason: 'first hop',
+                    },
+                  ],
+                });
+                dispatch({
+                  type: 'UPDATE_GO_BACK',
+                  goBackView: 'paper',
+                  filterQuery: null//query.matches.map((m) => m.entry.title),
+                });
             }}
+          }
           >
             See in detail
           </Button>
@@ -178,7 +152,7 @@ const ReadonlyEntry = (props: EntryPropTypes) => {
   const files = thisEntry.files.filter((f) => f.fileType !== 'url');
 
   return (
-    <Box>
+    <Box  id={`unthreaded-${thisEntry.activity_uid}`}>
       <div style={{ padding: 10 }}>
         <span style={{ fontSize: 22, fontWeight: 'bold' }}>
           {thisEntry.isPrivate && (
@@ -281,9 +255,7 @@ const ReadonlyEntry = (props: EntryPropTypes) => {
               ) : (
                 <ReactMde
                   value={thisEntry.description}
-                  // onChange={setValue}
                   selectedTab="preview"
-                  // onTabChange={()=> null}
                   minPreviewHeight={100}
                   generateMarkdownPreview={(markdown) =>
                     Promise.resolve(converter.makeHtml(markdown))
@@ -314,12 +286,13 @@ const ReadonlyEntry = (props: EntryPropTypes) => {
           <UnorderedList>
             {urls.map((url, i) => (
               <ListItem key={`${url.url}-${i}`}>
-                <a href={url.url}>{url.title}</a>
-                <FaExternalLinkAlt
-                  title="Open URL in default web browser"
-                  size="12px"
-                  style={{ display: 'inline' }}
-                />
+                <a href={url.url}>{url.title}
+                  <FaExternalLinkAlt
+                    title="Open URL in default web browser"
+                    size="12px"
+                    style={{ display: 'inline' }}
+                  />
+                </a>
               </ListItem>
             ))}
           </UnorderedList>

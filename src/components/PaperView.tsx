@@ -34,7 +34,20 @@ const getName = (parsed: any, activities: any, researchThreads: any) => {
   }
 };
 
-const PageNavigation = (props: any) => {
+type PageNavigationProps = {
+  pageData: string;
+  pageNumber: number;
+  numPages: number;
+  pageRectData: { pageIndex: number, anno: unknown[] }[];
+  anno: [any, unknown[]][] | null;
+  onDocumentLoadSuccess: (numPages: any) => void;
+  previousPage: () => void;
+  nextPage: () => void;
+  perf: any;
+  setToolHtml: React.Dispatch<React.SetStateAction<string>>;
+  setPosition: React.Dispatch<React.SetStateAction<number[]>>;
+};
+const PageNavigation = (props: PageNavigationProps) => {
   const {
     pageData,
     pageNumber,
@@ -189,7 +202,9 @@ const PageNavigation = (props: any) => {
   );
 };
 
-const DetailComponent = () => {
+const DetailComponent = (props) => {
+
+  const {setViewType} = props;
   const [{ viewParams, researchThreads, projectData }] = useProjectState();
 
   const associatedThreads = useMemo(() => {
@@ -219,7 +234,7 @@ const DetailComponent = () => {
         <ThreadNav viewType="paper" />
       )}
       <div style={{ overflow: 'auto', height: '100vh' }}>
-        <ProjectListView />
+        <ProjectListView setViewType={setViewType}/>
       </div>
       {associatedThreads.length > 0 &&
       viewParams &&
@@ -250,9 +265,16 @@ const DetailComponent = () => {
   );
 };
 
-const CitationIcon = (props: any) => {
+type CitationIconProps = {
+  link: any;
+  setPosition: (value: (((prevState: number[]) => number[]) | number[])) => void;
+  setHTML: React.Dispatch<React.SetStateAction<string>>;
+  // index: number;
+  rectWidth: number;
+};
+const CitationIcon = (props: CitationIconProps) => {
   const { link, setPosition, setHTML, index, rectWidth } = props;
-  const [{ projectData, researchThreads }] = useProjectState();
+  const [{ projectData, researchThreads, folderPath }] = useProjectState();
 
   const moveBack = rectWidth - 20;
   const parsed = queryString.parse(link.url);
@@ -268,17 +290,27 @@ const CitationIcon = (props: any) => {
     <g
       onMouseOver={(event) => {
         setPosition([200, event.clientY - 50]);
-        setHTML(`<div>
-      <span
-      style="font-weight:800"
-      >Cited ${parsed.granularity}: ${getName(
-          parsed,
-          projectData.entries,
-          researchThreads
-        )}</span><br />
-      <span
-      style="font-style:italic; font-size: 11px; line-height:1"
-      >"${link.text[0]}"</span><div>`);
+    
+        let pathKey = Object.keys(parsed).filter(f => f.includes('path'))[0]
+    
+        if(parsed[pathKey]){
+          setHTML(`<div>
+          <span
+          style="font-weight:800"
+          >Cited ${parsed.granularity}: ${getName(
+            parsed,
+            projectData.entries,
+            researchThreads
+            )}</span><br />
+          <div>`);
+        }else{
+          setHTML(`<div>
+          <span
+          style="font-weight:800"
+          >Website Link</span><br />
+          <div>`);
+        }
+       
         d3.select('#tooltip-cite').style('opacity', 1);
       }}
       onMouseOut={() => {
@@ -288,13 +320,13 @@ const CitationIcon = (props: any) => {
       transform={calcPos(index)}
     >
       <a href={link.url}>
-        <WhichFA link={link} index={index} />
+        <WhichFA link={link} />
       </a>
     </g>
   );
 };
 
-const WhichFA = (props: any) => {
+const WhichFA = (props: { link: any }) => {
   const { link } = props;
   const [{ viewParams }] = useProjectState();
 
@@ -374,8 +406,15 @@ const WhichFA = (props: any) => {
   );
 };
 
-const CitationVis = (props: any) => {
-  const { pageNumber, pageRectData, setPosition, setToolHtml } = props;
+type CitationVisProps = {
+  pageNumber: number;
+  pageRectData: { pageIndex: number; anno: unknown[] }[];
+  setPosition: React.Dispatch<React.SetStateAction<number[]>>;
+  setToolHtml: React.Dispatch<React.SetStateAction<string>>;
+};
+const CitationVis = (props: CitationVisProps) => {
+  const { pageNumber, pageRectData, setPosition, setToolHtml } =
+    props;
 
   const svgRef = React.useRef(null);
   const iconSize = 20;
@@ -404,11 +443,12 @@ const CitationVis = (props: any) => {
               calWidth(maxAnno) - calWidth(prd.anno.length) - 10
             }, ${rectHeight * i + 2})`}
           >
+           
             <rect
               height={rectHeight}
               width={prd.anno.length > 0 ? calWidth(prd.anno.length) + 10 : 23}
               fill="#d3d3d3"
-              fillOpacity={i + 1 === pageNumber ? 0.7 : 0.25}
+              fillOpacity={i + 1 === pageNumber ? 0.8 : 0.25}
             />
             <g
               transform={`translate(0, ${
@@ -421,12 +461,21 @@ const CitationVis = (props: any) => {
                   index={j}
                   setPosition={setPosition}
                   setHTML={setToolHtml}
-                  rectH={rectHeight}
-                  total={prd.anno.length}
                   rectWidth={calWidth(prd.anno.length)}
                 />
               ))}
             </g>
+
+            {
+              (i + 1 === pageNumber) && (
+                <g 
+                transform={`translate(0, 10)`}>
+                <text
+                style={{fontSize:9, textAnchor:'start'}}
+                >{`Page ${pageNumber}`}</text>
+                </g>
+              )
+            }
           </g>
         ))}
       </svg>
@@ -488,9 +537,15 @@ const BubbLabel = () => {
 };
 
 const PaperView = (props: any) => {
-  const { folderPath, windowDimension, setWindowDimension } = props;
+  const { folderPath, windowDimension, setWindowDimension, setViewType } = props;
   // const perf = joinPath(folderPath, 'paper_2020_insights.pdf');
-  const perf = joinPath(folderPath, '2022_trevo_new_links.pdf');
+
+  // const perf = joinPath(`trrracer/${folderPath}`, '2022_trevo_new_links-compressed.pdf');
+
+  let pathCheck = folderPath.includes('http://localhost:9999/') || window.location.href.includes('https://trrracer.netlify.app/') ? folderPath : `trrracer/${folderPath}`;
+  // const perf = joinPath(`trrracer/${folderPath}`, 'paper.pdf');
+  const perf = joinPath(pathCheck, 'paper.pdf');
+
   const [{ filterRT, linkData, isReadOnly, viewParams }] = useProjectState();
 
   let passedLink = linkData
@@ -499,13 +554,16 @@ const PaperView = (props: any) => {
 
   const anno = linkData ? d3.groups(linkData, (d) => d.page) : null;
   const index = filterRT?.rtId || 0;
-  const [numPages, setNumPages] = useState(null);
+  const [numPages, setNumPages] = useState(0);
   const [pageNumber, setPageNumber] = useState(1); // setting 1 to show fisrt page
   const [bubbleDivWidth, setBubbleDivWidth] = useState(200);
   const [pageData, setPageData] = useState('');
   const [beenClicked, setBeenClicked] = useState(false);
   const [position, setPosition] = useState([0, 0]);
   const [toolhtml, setToolHtml] = useState('<div>This is a start</div>');
+
+
+  console.log('ANNO', anno);
 
   useEffect(() => {
     if (passedLink.length > 0 && !beenClicked)
@@ -579,7 +637,7 @@ const PaperView = (props: any) => {
             width: '350px',
           }}
         >
-          <DetailComponent />
+          <DetailComponent setViewType={setViewType}/>
         </div>
         <div style={{ height: '100%', float: 'left' }}>
           {viewParams && viewParams.granularity === 'artifact' ? (
@@ -590,8 +648,7 @@ const PaperView = (props: any) => {
             <div>
               <BubbLabel />
               <BubbleVis
-                groupBy={null}
-                setGroupBy={null}
+                
                 flexAmount={null}
                 setDefineEvent={null}
                 defineEvent={null}
@@ -603,10 +660,8 @@ const PaperView = (props: any) => {
             </div>
           )}
           <CitationVis
-            anno={anno}
             pageNumber={pageNumber}
             pageRectData={pageRectData}
-            index={index}
             setToolHtml={setToolHtml}
             setPosition={setPosition}
           />

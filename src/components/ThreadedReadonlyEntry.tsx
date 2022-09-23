@@ -1,6 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import * as d3 from 'd3';
-import * as d3co from 'd3-color';
+
 import {
   Button,
   ListItem,
@@ -108,8 +107,23 @@ const ReadonlyArtifact = (props: ReadonlyArtifactPropTypes) => {
   );
 };
 
-const ThreadedArtifact = (props: any) => {
-  const { setViewType, openFile, fileData, thisEntry, folderPath, i } = props;
+type ThreadedArtifactProps = {
+  setViewType: (viewType: string) => void;
+  openFile: (a: string, fp: string) => void;
+  fileData: File;
+  thisEntry: EntryType;
+  folderPath: string;
+  i: number;
+};
+const ThreadedArtifact = (props: ThreadedArtifactProps) => {
+  const {
+    setViewType,
+    openFile,
+    fileData,
+    thisEntry,
+    folderPath,
+    i,
+  } = props;
 
   const [, dispatch] = useProjectState();
 
@@ -187,8 +201,14 @@ const ThreadedArtifact = (props: any) => {
   );
 };
 
-const ActivityTitleLogic = (props: any) => {
+type ActivityTitleLogicProps = {
+  thisEntry: EntryType;
+  color: string;
+};
+const ActivityTitleLogic = (props: ActivityTitleLogicProps) => {
   const { thisEntry, color } = props;
+  const [, dispatch] = useProjectState();
+
   return (
     <div
       style={{
@@ -196,14 +216,10 @@ const ActivityTitleLogic = (props: any) => {
         display: 'inline',
       }}
       onMouseOver={() => {
-        const circles = d3.selectAll('circle.all-activities');
-        circles.filter((f) => f.title === thisEntry.title).attr('fill', 'red');
+        dispatch({ type: 'HOVER_OVER_ACTIVITY', hoverActivity: thisEntry });
       }}
       onMouseLeave={() => {
-        const circles = d3.selectAll('circle.all-activities');
-        circles
-          .filter((f) => f.title === thisEntry.title)
-          .attr('fill', d3co.hsl(color).copy({ l: 0.9 }));
+        dispatch({ type: 'HOVER_OVER_ACTIVITY', hoverActivity: null });
       }}
     >
       <span>{thisEntry.title}</span>
@@ -211,7 +227,14 @@ const ActivityTitleLogic = (props: any) => {
   );
 };
 
-const ThreadedReadonlyEntry = (props: any) => {
+type ThreadedReadonlyEntryProps = {
+  activityID: string;
+  makeEditable: (index: number, isEditable: boolean) => void;
+  openFile: (a: string, fp: string) => void;
+  setViewType: (vieType: string) => void;
+  viewType: string;
+};
+const ThreadedReadonlyEntry = (props: ThreadedReadonlyEntryProps) => {
   const { activityID, makeEditable, openFile, setViewType, viewType } = props;
 
   const [{ projectData, researchThreads, filterRT, folderPath, isReadOnly }] =
@@ -238,9 +261,7 @@ const ThreadedReadonlyEntry = (props: any) => {
   const files = thisEntry.files.filter((f) => f.fileType !== 'url');
 
   const activitiesAsEvidence = isEntryInThread;
-  // .filter(
-  //   (f) => f.type === 'fragment' || f.type === 'artifact'
-  // );
+
 
   const threadedFiles = files
     .filter((f) =>
@@ -255,7 +276,6 @@ const ThreadedReadonlyEntry = (props: any) => {
 
   const otherFiles = files.filter(
     (f) => threadedFiles.map(m => m.title).indexOf(f.title) === -1
-      // activitiesAsEvidence.map((m) => m.artifactTitle).indexOf(f.title) === -1 && 
   );
 
   const threadedActivity = isEntryInThread.filter((f) => f.type === 'activity');
@@ -312,8 +332,6 @@ const ThreadedReadonlyEntry = (props: any) => {
                       size="sm"
                       style={{
                         marginLeft: '5px',
-                        // backgroundColor: '#ff726f',
-                        // borderRadius: 30
                       }}
                     >
                       <GiCancel size={18} />
@@ -361,7 +379,7 @@ const ThreadedReadonlyEntry = (props: any) => {
                       }}
                     >
                       {nonThreadedTags.length}
-                      {threadedTags.length > 0 ? ' More Tags' : 'Tags'}
+                      {threadedTags.length > 0 ? ' More Tags' : ' Tags'}
                     </Badge>
                   </PopoverTrigger>
 

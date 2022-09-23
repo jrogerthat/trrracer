@@ -26,7 +26,7 @@ const ActivityTitlePopoverLogic = (
   const { activityData, researchThreads } = props;
   const [seeThreadAssign, setSeeThreadAssign] = useState(false);
 
-  const [{ projectData, isReadOnly }, dispatch] = useProjectState();
+  const [{ projectData, isReadOnly, folderPath }, dispatch] = useProjectState();
 
   return isReadOnly ? (
     <div
@@ -47,18 +47,10 @@ const ActivityTitlePopoverLogic = (
             cursor: 'pointer',
           }}
           onMouseOver={() => {
-            const circles = d3.selectAll('circle.all-activities');
-
-            circles
-              .filter((f) => f.title === activityData.title)
-              .attr('fill', 'red');
+            dispatch({ type: 'HOVER_OVER_ACTIVITY', hoverActivity: activityData });
           }}
           onMouseLeave={() => {
-            const circles = d3.selectAll('circle.all-activities');
-
-            circles
-              .filter((f) => f.title === activityData.title)
-              .attr('fill', '#d3d3d3');
+            dispatch({ type: 'HOVER_OVER_ACTIVITY', hoverActivity: null });
           }}
         >
           {activityData.title}
@@ -72,7 +64,7 @@ const ActivityTitlePopoverLogic = (
             <div>
               {researchThreads &&
               researchThreads.research_threads.length > 0 ? (
-                researchThreads.research_threads.map((rt, tIndex: number) => (
+                researchThreads.research_threads.map((rt, tIndex) => (
                   <React.Fragment key={`rt-${tIndex}`}>
                     <ActivitytoThread
                       thread={rt}
@@ -113,26 +105,19 @@ const ActivityTitlePopoverLogic = (
               <span style={{ fontSize: 12, color: 'black', lineHeight: 1 }}>
                 <Button
                   onClick={() => {
-                    const indexTest = projectData.citations
-                      .map((c) => c.id)
-                      .indexOf(activityData.activity_uid);
-                    const index =
-                      indexTest > -1
-                        ? indexTest + 1
-                        : projectData.citations.length + 1;
-                    navigator.clipboard.writeText(
-                      String.raw`\trrracer{overview}{activity}{${activityData.activity_uid}}{${index}}`
-                    );
-                    if (indexTest === -1) {
-                      const newCitations = [
-                        ...projectData.citations,
-                        { id: activityData.activity_uid, cIndex: index },
-                      ];
-                      dispatch({
-                        type: 'ADD_CITATION',
-                        citations: newCitations,
-                      });
+             
+                    let what = folderPath?.split('/').at(-1);
+      
+                    let dataDict = {
+                      'Jen' : 'jen',
+                      'Evo Bio' : 'evobio',
+                      'Ethics of Exit': 'ethics'
                     }
+                  
+                    navigator.clipboard.writeText(
+                      String.raw`\trrracer{${dataDict[what]}}{overview}{activity}{${activityData.activity_uid}}`
+                    );
+    
                   }}
                 >
                   Copy this ref

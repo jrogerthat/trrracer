@@ -1,21 +1,20 @@
 import React, { useState } from 'react';
 
-import {
-  Button,
-  Popover,
-  PopoverTrigger,
-  PopoverContent,
-  PopoverArrow,
-  PopoverBody,
-} from '@chakra-ui/react';
+import { Button } from '@chakra-ui/react';
 
-import { useProjectState } from './ProjectContext';
 import { HoverTitle } from './QueryView';
+import type { QueryMatchType } from './types';
 
+type QueryMatchComponentProps = {
+  m: QueryMatchType;
+  tm: any;
+  setViewType: (viewType: string) => void;
+  j: number;
+};
 
-const QueryMatchComponent = (props: any) => {
+const QueryMatchComponent = (props: QueryMatchComponentProps) => {
   const { m, tm, j, setViewType } = props;
-  const [show, setShow] = useState(false);
+  const [show, setShow] = useState(true);
 
   return (
 
@@ -24,15 +23,14 @@ const QueryMatchComponent = (props: any) => {
         <HoverTitle
           title={tm['file-title'] ? tm['file-title'] : tm.title}
           entry={m.entry}
-          match={tm}
           setViewType={setViewType}
         />
-        <Button
+        {/* <Button
           size="xs"
           onClick={() => (show ? setShow(false) : setShow(true))}
         >
-          show text
-        </Button>
+          {show ? 'Hide ' : 'Show '} text
+        </Button> */}
       </div>
       {show && (
         <div>

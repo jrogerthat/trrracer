@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import {
   Badge,
   Box,
@@ -34,7 +34,11 @@ type MiniTimelineProps = {
   activities: EntryType[];
 };
 
-export const CreateThreadComponent = (props: any) => {
+type CreateThreadComponentPropType = {
+   setShowCreateThread: React.Dispatch<React.SetStateAction<boolean>>
+};
+
+export const CreateThreadComponent = (props: CreateThreadComponentPropType) => {
   const { setShowCreateThread } = props;
   const [{ projectData }, dispatch] = useProjectState();
 
@@ -357,7 +361,13 @@ const EditableThread = (threadProps: EditableThreadPropType) => {
   );
 };
 
-const ThreadBanner = (props: any) => {
+type ThreadBannerPropType = {
+  index: number;
+  rt: ResearchThread;
+  expanded: boolean;
+  setExpanded: (value: (((prevState: boolean) => boolean) | boolean)) => void;
+};
+const ThreadBanner = (props: ThreadBannerPropType) => {
   const { index, rt, expanded, setExpanded } = props;
   const [{ isReadOnly, filterRT }, dispatch] = useProjectState();
   const [bannerColor, setBannerColor] = useState(
@@ -384,12 +394,20 @@ const ThreadBanner = (props: any) => {
           borderRadius: 5,
           backgroundColor: bannerColor,
         }}
+        onClick={() => {
+          dispatch({
+            type: 'THREAD_FILTER',
+            filterRT: rt,
+            rtIndex: index,
+          });
+          setExpanded(true);
+        }}
       >
         <span
           style={{
             cursor: 'pointer',
             display: 'inline',
-            fontSize: 18,
+            fontSize: 16,
             fontWeight: 600,
             color: '#3a3b3c',
           }}
@@ -407,7 +425,7 @@ const ThreadBanner = (props: any) => {
         {index != filterRT?.rtIndex && (
           <span
             style={{
-              padding: 5,
+              padding: 2,
               float: 'right',
               display: 'inline',
               cursor: 'pointer',
@@ -440,7 +458,7 @@ type ThreadComponentPropType = {
 
 const ThreadComponent = (props: ThreadComponentPropType) => {
   const { rt, index, editMode, setEditMode, filteredThreads } = props;
-  const [{ projectData, isReadOnly, filterRT, researchThreads }, dispatch] = useProjectState();
+  const [{ projectData, isReadOnly, filterRT, researchThreads, folderPath }, dispatch] = useProjectState();
   const [expanded, setExpanded] = useState(false);
 
   const checkIfSelectThread = (i: any) => {
@@ -463,7 +481,10 @@ const ThreadComponent = (props: ThreadComponentPropType) => {
     });
 
     let tags = [...tagArrayMain, ...tagArrayMerged].flatMap((fm) => {
-      return projectData.entries.filter((f) => f.title === fm.activityTitle)[0]
+
+      let test =  projectData.entries.filter((f) => f.title === fm.activityTitle);
+      
+      return test.length > 0 ? test[0]
         .tags.map((t) => {
           let temp = {
             tag: t,
@@ -471,7 +492,7 @@ const ThreadComponent = (props: ThreadComponentPropType) => {
           }
           
           return temp;
-        });
+        }) : [];
     });
     let groupTags = Array.from(d3.group(tags.map(t => t.tag), (d) => d));
     let sorted = groupTags.sort((a, b) => b[1].length - a[1].length);
@@ -618,27 +639,20 @@ const ThreadComponent = (props: ThreadComponentPropType) => {
                         <span style={{ display: 'block' }}>
                           <Button
                             onClick={() => {
-                              let indexTest = projectData.citations
-                                .map((c) => c.id)
-                                .indexOf(rt.rt_id);
-                              let index =
-                                indexTest > -1
-                                  ? indexTest + 1
-                                  : projectData.citations.length + 1;
+
+                              let what = folderPath?.split('/').at(-1);
+      
+                              let dataDict = {
+                                'Jen' : 'jen',
+                                'Evo Bio' : 'evobio',
+                                'Ethics of Exit': 'ethics'
+                              }
+                             
                               navigator.clipboard.writeText(
-                                String.raw`\trrracer{overview}{thread}{${rt.rt_id}}{${index}}`
+                                String.raw`\trrracer{${dataDict[what]}}{overview}{thread}{${rt.rt_id}}`
                               );
 
-                              if (indexTest === -1) {
-                                let newCitations = [
-                                  ...projectData.citations,
-                                  { id: rt.rt_id, cIndex: index },
-                                ];
-                                dispatch({
-                                  type: 'ADD_CITATION',
-                                  citations: newCitations,
-                                });
-                              }
+                             
                             }}
                           >
                             Copy this ref
