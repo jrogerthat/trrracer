@@ -62,15 +62,10 @@ const DetailPreview = (props: DetailPreviewPropsType) => {
 
   const [
     {
-      googleData,
       projectData,
       folderPath,
       selectedArtifact,
-      isReadOnly,
-      query,
-    },
-    dispatch,
-  ] = useProjectState();
+    }, ] = useProjectState();
 
   const activity = useMemo(() => {
     return projectData.entries.filter(
@@ -130,6 +125,66 @@ const DetailPreview = (props: DetailPreviewPropsType) => {
   }
 
   if (title.endsWith('.gdoc')) {
+    return <PreviewGDoc artifact={artifact} title={title} searchTermArtifact={searchTermArtifact} setFragSelected={setFragSelected} />
+  }
+
+  if (title.endsWith('.gsheet')) {
+    return (
+      <GrDocumentExcel
+        onClick={() => openFile(title, folderPath)}
+        size={size}
+      />
+    );
+  }
+
+  if (title.endsWith('.txt')) {
+    return <PreviewTxt artifact={artifact} title={title} searchTermArtifact={searchTermArtifact} setFragSelected={setFragSelected} />
+  }
+
+  if (title.endsWith('.phy') || title.endsWith('.nex')) {
+    return (
+      <GrCluster onClick={() => openFile(title, folderPath)} size={size} />
+    );
+  }
+
+  if (title.endsWith('.rtf')) {
+    return (
+      <GrDocumentRtf onClick={() => openFile(title, folderPath)} size={size} />
+    );
+  }
+  if (title.endsWith('.eml')) {
+    return (
+      <EmailRender
+        title={title}
+      />
+    );
+  }
+
+  if (title.endsWith('.pdf')) {
+    return <PreviewPDF title={title} />
+  }
+
+  if (title.endsWith('.HEIC')) {
+    return (
+      <GrDocumentImage
+        onClick={() => openFile(title, folderPath)}
+        size={size}
+      />
+    );
+  }
+
+  return (
+    <ImageRender
+      src={url(folderPath, title)}
+      autoLoad
+    />
+  );
+};
+
+const PreviewGDoc = (props) => {
+    const {artifact, title, searchTermArtifact, setFragSelected} = props;
+
+    const [ { googleData, folderPath, isReadOnly }, dispatch ] = useProjectState();
 
     const [chosenGoogData, setchosenGoogData] = useState<null|any>(null);
     const [chosenComments, setChosenComments] = useState<null|any>(null);
@@ -143,7 +198,7 @@ const DetailPreview = (props: DetailPreviewPropsType) => {
           const googD = googleData[artifact.fileId];
           setchosenGoogData(googD.body.content.filter((f: any) => f.startIndex));
           if(artifact.comments) setChosenComments(artifact.comments.comments);
-  
+
         }else{
 
         readFileSync(`${folderPath}${title}`)
@@ -159,17 +214,17 @@ const DetailPreview = (props: DetailPreviewPropsType) => {
           const googD = googleData[artifact.fileId];
           setchosenGoogData(googD.body.content.filter((f: any) => f.startIndex));
           if(artifact.comments) setChosenComments(artifact.comments.comments);
-  
+
         }else{
-  
+
           getDriveFiles(folderPath, googleCred, googleData).then((googOb) => {
-          
+
             const chosen = googOb.goog_doc_data[artifact.fileId];
-  
+
             const gContent = chosen
               ? chosen.body.content.filter((f: any) => f.startIndex)
               : null;
-            
+
             if(artifact.comments) setChosenComments(artifact.comments.comments);
             if(chosenGoogData === null){
               setchosenGoogData(gContent);
@@ -178,9 +233,9 @@ const DetailPreview = (props: DetailPreviewPropsType) => {
                 googDocData: googOb.goog_doc_data,
               });
                 // dispatch({type: 'UPDATE_GOOG_IDS', googFileIds: googOb.goog_file_ids});
-  
+
             }
-              
+
           });
         }
       }
@@ -222,18 +277,14 @@ const DetailPreview = (props: DetailPreviewPropsType) => {
           <div>Oops could not load google doc</div>
         )
     )
-  }
+}
 
-  if (title.endsWith('.gsheet')) {
-    return (
-      <GrDocumentExcel
-        onClick={() => openFile(title, folderPath)}
-        size={size}
-      />
-    );
-  }
+const PreviewTxt = (props) => {
 
-  if (title.endsWith('.txt')) {
+    const {artifact, title, searchTermArtifact, setFragSelected} = props;
+    const [ { folderPath, isReadOnly }, ] = useProjectState();
+
+
     const [textFile, setText] = useState<TextArray>([]);
 
     const textProcess = (textDat:string, st:any) => {
@@ -249,7 +300,7 @@ const DetailPreview = (props: DetailPreviewPropsType) => {
           keeper.push({ style: 'normal', textData: textA[j] });
         }
         textArray = keeper;
-       
+
         }
       //   else if (query) {
       //   const textA = textDat.split(query.term);
@@ -258,9 +309,9 @@ const DetailPreview = (props: DetailPreviewPropsType) => {
       //     keeper.push({ style: 'highlight', textData: query.term });
       //     keeper.push({ style: 'normal', textData: textA[j] });
       //   }
-        
+
       //   textArray = keeper;
-      
+
       // }
       else if (artifact.bookmarks) {
         const start = textArray[0].textData.split(
@@ -304,7 +355,7 @@ const DetailPreview = (props: DetailPreviewPropsType) => {
     let path = isReadOnly ? `${folderPath}${title}` : `${folderPath}/${title}`;
 
     useEffect(() => {
-     
+
       if (isReadOnly) {
         readFileSync(path)
           .then((res) => res.text())
@@ -314,11 +365,11 @@ const DetailPreview = (props: DetailPreviewPropsType) => {
       }else{
         readFileSync(path).then((text) => {
           let textArray = textProcess(text, searchTermArtifact);
-        
+
           setText(textArray);
         });
       }
-      
+
     }, [folderPath, title, searchTermArtifact]);
 
     return (
@@ -341,74 +392,41 @@ const DetailPreview = (props: DetailPreviewPropsType) => {
         )}
       </div>
     );
-  }
+}
 
-  if (title.endsWith('.phy') || title.endsWith('.nex')) {
-    return (
-      <GrCluster onClick={() => openFile(title, folderPath)} size={size} />
-    );
-  }
+const PreviewPDF = (props) => {
+  const [{folderPath, isReadOnly},] = useProjectState();
+  const {title} = props;
 
-  if (title.endsWith('.rtf')) {
-    return (
-      <GrDocumentRtf onClick={() => openFile(title, folderPath)} size={size} />
-    );
-  }
-  if (title.endsWith('.eml')) {
-    return (
-      <EmailRender
-        title={title}
-      />
-    );
-  }
+  const perf = joinPath(folderPath, title);
+  const [pageData, setPageData] = useState();
 
-  if (title.endsWith('.pdf')) {
-    const perf = joinPath(folderPath, title);
-    const [pageData, setPageData] = useState();
-
-    useEffect(() => {
-      if (isReadOnly) {
-        readFileSync(perf)
-          .then((res) => res.text())
-          .then((pap) => {
-            setPageData(pap);
-          });
-      } else {
-        setPageData(perf);
-      }
-    }, [folderPath, perf]);
-
-    if (pageData) {
-      return (
-        // <iframe src="data:application/pdf;base64,YOUR_BINARY_DATA" height="100%" width="100%"></iframe>
-        <iframe
-          src={isReadOnly ? `data:application/pdf;base64,${pageData}` : perf}
-          height="100%"
-          width="700px"
-          onLoad={(event) => {
-            console.log('event', event);
-          }}
-        />
-      );
+  useEffect(() => {
+    if (isReadOnly) {
+      readFileSync(perf)
+        .then((res) => res.text())
+        .then((pap) => {
+          setPageData(pap);
+        });
+    } else {
+      setPageData(perf);
     }
-    return <div>Loading</div>;
-  }
+  }, [folderPath, perf]);
 
-  if (title.endsWith('.HEIC')) {
+  if (pageData) {
     return (
-      <GrDocumentImage
-        onClick={() => openFile(title, folderPath)}
-        size={size}
+      // <iframe src="data:application/pdf;base64,YOUR_BINARY_DATA" height="100%" width="100%"></iframe>
+      <iframe
+        src={isReadOnly ? `data:application/pdf;base64,${pageData}` : perf}
+        height="100%"
+        width="700px"
+        onLoad={(event) => {
+          console.log('event', event);
+        }}
       />
     );
   }
-
-  return (
-    <ImageRender
-      src={url(folderPath, title)}
-      autoLoad
-    />
-  );
-};
+  return <div>Loading</div>;
+}
 
 export default DetailPreview;
