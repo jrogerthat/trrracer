@@ -10,7 +10,7 @@ const EmailRender = (props: any) => {
   const [emailData, setEmailData] = useState<null|any>(null);
 
   useEffect(() => {
-    readFileSync(`${folderPath}/${title}`).then((eml) => {
+    readFileSync(`${folderPath}${title}`).then((eml) => {
       let test = eml.split('Date:').filter((f, i) => i != 0);
 
       let parsed = test.map((m, i) => {
