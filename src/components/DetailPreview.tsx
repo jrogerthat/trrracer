@@ -72,6 +72,17 @@ const DetailPreview = (props: DetailPreviewPropsType) => {
     dispatch,
   ] = useProjectState();
 
+  //for .gdoc
+  const [chosenGoogData, setchosenGoogData] = useState<null|any>(null);
+  const [chosenComments, setChosenComments] = useState<null|any>(null);
+
+  // for .txt
+  const [textFile, setText] = useState<TextArray>([]);
+
+  // for .pdf
+  const [pageData, setPageData] = useState();
+
+
   const activity = useMemo(() => {
     return projectData.entries.filter(
       (f) => f.activity_uid === selectedArtifact.activity.activity_uid
@@ -130,10 +141,6 @@ const DetailPreview = (props: DetailPreviewPropsType) => {
   }
 
   if (title.endsWith('.gdoc')) {
-
-    const [chosenGoogData, setchosenGoogData] = useState<null|any>(null);
-    const [chosenComments, setChosenComments] = useState<null|any>(null);
-
     useEffect(()=> {
 
       if(isReadOnly){
@@ -234,8 +241,6 @@ const DetailPreview = (props: DetailPreviewPropsType) => {
   }
 
   if (title.endsWith('.txt')) {
-    const [textFile, setText] = useState<TextArray>([]);
-
     const textProcess = (textDat:string, st:any) => {
 
       let textArray =
@@ -364,7 +369,6 @@ const DetailPreview = (props: DetailPreviewPropsType) => {
 
   if (title.endsWith('.pdf')) {
     const perf = joinPath(folderPath, title);
-    const [pageData, setPageData] = useState();
 
     useEffect(() => {
       if (isReadOnly) {
