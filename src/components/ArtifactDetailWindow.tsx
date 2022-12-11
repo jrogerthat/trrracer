@@ -113,7 +113,7 @@ const ArtifactDetailWindow = (props: DetailProps) => {
             onClick={() => {
               const selectActivity =
                 selectedArtifact.activity.index > 0
-                  ? projectData.entries[selectedArtifact.artifactIndex - 1]
+                  ? projectData.entries[selectedArtifact.activity.index - 1]
                   : projectData.entries[projectData.entries.length - 1];
 
               const newHop = [
@@ -153,7 +153,7 @@ const ArtifactDetailWindow = (props: DetailProps) => {
             onClick={() => {
               const selectActivity =
                 selectedArtifact.artifactIndex < projectData.entries.length - 1
-                  ? projectData.entries[selectedArtifact.artifactIndex + 1]
+                  ? projectData.entries[selectedArtifact.activity.index + 1]
                   : projectData.entries[0];
 
               const newHop = [
