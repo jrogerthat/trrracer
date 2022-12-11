@@ -109,7 +109,7 @@ const URLList = (props: URLListProps) => {
             {urls.map((url) => (
               <ListItem key={url.url}>
                 {/* // <a href={url.url}>{url.title}</a> */}
-                <a href={url.url}>{url.title} </a>
+                <a href={url.url} target="_blank" rel="nofollow">{url.title} </a>
                 <FaExternalLinkAlt
                   title="Open URL in default web browser"
                   size="12px"

@@ -479,7 +479,7 @@ const ThreadedReadonlyEntry = (props: ThreadedReadonlyEntryProps) => {
           <UnorderedList>
             {urls.map((url, i) => (
               <ListItem key={`${url.url}-${i}`}>
-                <a href={url.url}>{url.title} </a>
+                <a href={url.url} target="_blank" rel="nofollow">{url.title} </a>
                 <FaExternalLinkAlt
                   title="Open URL in default web browser"
                   size="12px"
