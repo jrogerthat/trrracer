@@ -26,7 +26,7 @@ if (isElectron) {
 }
 
 const url = (folderPath: string, title: string) => {
-  if (folderPath.startsWith('http://') || folderPath.startsWith('https://')) {
+  if (folderPath.startsWith('http://') || folderPath.startsWith('https://') || folderPath.startsWith('./')) {
     return `${joinPath(folderPath, title)}`;
   }
   return `file://${folderPath}/${title}`;
