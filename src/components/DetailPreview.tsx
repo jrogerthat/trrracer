@@ -77,6 +77,10 @@ const DetailPreview = (props: DetailPreviewPropsType) => {
     return activity.files[selectedArtifact.artifactIndex];
   }, [selectedArtifact.activity.activity_uid, selectedArtifact.artifactIndex]);
 
+  if (!artifact){
+    return <></>;
+  }
+
   const { title } = artifact;
 
   if (
