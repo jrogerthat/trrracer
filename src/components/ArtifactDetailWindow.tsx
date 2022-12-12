@@ -62,7 +62,8 @@ const ArtifactDetailWindow = (props: DetailProps) => {
 
   const [fragSelected, setFragSelected] = useState<boolean>(false);
 
-  const selectedFileType = selectedArtifact ? selectedArtifact.activity.files[selectedArtifact.artifactIndex].title.split('.').at(-1) : null;
+  const selectedFileType = (selectedArtifact && selectedArtifact.activity.files && selectedArtifact.activity.files.length > 0)
+    ? selectedArtifact.activity.files[selectedArtifact.artifactIndex].title.split('.').at(-1) : null;
 
   useEffect(() => {
     if (editable.length === projectData.entries.length - 1) {
@@ -192,7 +193,7 @@ const ArtifactDetailWindow = (props: DetailProps) => {
             paddingTop: 5,
           }}
         >{`Artifact: ${
-          (selectedArtifact && selectedArtifact.artifactIndex > -1 && selectedArtifact.activity.files)
+          (selectedArtifact && selectedArtifact.artifactIndex > -1 && selectedArtifact.activity.files && selectedArtifact.activity.files.length > 0)
             ? selectedArtifact.activity.files[selectedArtifact.artifactIndex]
                 .title
             : 'No artifacts with this activity'
