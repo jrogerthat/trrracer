@@ -62,7 +62,7 @@ const ArtifactDetailWindow = (props: DetailProps) => {
 
   const [fragSelected, setFragSelected] = useState<boolean>(false);
 
-  let selectedFileType = selectedArtifact.activity.files[selectedArtifact.artifactIndex].title.split('.').at(-1);
+  const selectedFileType = selectedArtifact ? selectedArtifact.activity.files[selectedArtifact.artifactIndex].title.split('.').at(-1) : null;
 
   useEffect(() => {
     if (editable.length === projectData.entries.length - 1) {
@@ -121,7 +121,9 @@ const ArtifactDetailWindow = (props: DetailProps) => {
                 {
                   activity: selectActivity,
                   artifactUid:
-                    selectActivity && selectActivity.files[0].artifact_uid
+                    selectActivity &&
+                    selectActivity.files.length > 0 &&
+                    selectActivity.files[0].artifact_uid
                       ? selectActivity.files[0].artifact_uid
                       : null,
                   hopReason: 'time hop back',
