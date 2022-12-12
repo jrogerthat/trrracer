@@ -154,7 +154,7 @@ const BubbleVis = (props: BubbleProps) => {
       ].months.filter((f: any, i: number) => i < endIndex);
 
     // TODO: move
-    wrapRef.current && setBubbleDivWidth(wrapRef.current - 250);
+    wrapRef.current && setBubbleDivWidth(wrapRef.current.clientWidth - 250);
 
   }, [
     selectedActivityURL,
