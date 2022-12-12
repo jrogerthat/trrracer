@@ -192,7 +192,7 @@ const ArtifactDetailWindow = (props: DetailProps) => {
             paddingTop: 5,
           }}
         >{`Artifact: ${
-          (selectedArtifact && selectedArtifact.artifactIndex > -1)
+          (selectedArtifact && selectedArtifact.artifactIndex > -1 && selectedArtifact.activity.files)
             ? selectedArtifact.activity.files[selectedArtifact.artifactIndex]
                 .title
             : 'No artifacts with this activity'
