@@ -831,7 +831,7 @@ const ArtifactDetailSidebar = (props: ArtifactDetailSidebarProps) => {
                         e.artifactTitle ===
                         selectedArtifact?.activity.files[
                           selectedArtifact?.artifactIndex
-                        ].title
+                        ]?.title
                       );
                     } else {
                       return (
