@@ -154,7 +154,7 @@ const ArtifactDetailWindow = (props: DetailProps) => {
 
           <Button
             style={{ marginLeft: '10px' }}
-            disabled={selectedArtifact.activity.index > (projectData.entries.length - 1)}
+            disabled={selectedArtifact.activity.index == (projectData.entries.length - 1)}
             onClick={() => {
               const selectActivity =
                 selectedArtifact.artifactIndex < projectData.entries.length - 1
