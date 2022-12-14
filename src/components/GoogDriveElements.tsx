@@ -219,6 +219,10 @@ const GoogDriveParagraph = (parProps: any) => {
       );
   };
 
+  if (!parData.paragraph) {
+    return <></>;
+  }
+  
   return parData.paragraph.paragraphStyle.namedStyleType.includes('HEADING') ? (
     <div>{getHeading(parData.paragraph.paragraphStyle, parData.paragraph)}</div>
   ) : (
