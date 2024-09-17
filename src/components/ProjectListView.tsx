@@ -57,7 +57,27 @@ const ProjectListView = (ProjectPropValues: any) => {
   };
 
   const ActivityWrap = lazy(() => isReadOnly ? import("./webComponents/ActivityWrap") : import("./desktopComponents/ActivityWrap"));
-
+  if(usedEntries.length === 1){
+    return(
+      <div style={{ 
+        padding: '10px', 
+        marginTop: '20px', 
+        width: width ? width : '100%',
+        float: 'right'
+        }}>
+            <div style={{width:50, height:50, float:'right'}}>{'x'}</div>
+          <ActivityWrap
+          key={`fr-${usedEntries[0].title}`}
+          activityData={usedEntries[0]}
+          editable={editable}
+          setEditableStatus={setEditableStatus}
+          setViewType={setViewType}
+          viewType={viewType}
+          index={0}
+          /></div>
+    )
+   
+  }
   return (
     <div style={{ 
       padding: '10px', 
@@ -65,8 +85,8 @@ const ProjectListView = (ProjectPropValues: any) => {
       width: width ? width : '100%',
       float: 'right'
       }}>
-       <Suspense fallback={<div>Loading... </div>}>
-      {usedEntries.map((activityData: EntryTypeWithIndex, i: number) => (
+        <Suspense fallback={<div>Loading... </div>}>
+      { usedEntries.map((activityData: EntryTypeWithIndex, i: number) => (
           <ActivityWrap
           key={`fr-${activityData.title}-${activityData.index}-${i}`}
           activityData={activityData}
@@ -76,9 +96,9 @@ const ProjectListView = (ProjectPropValues: any) => {
           viewType={viewType}
           index={i}
         />
-        
       ))}
-      </Suspense>
+      
+ </Suspense>
     </div>
   );
 };
